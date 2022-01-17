@@ -1,0 +1,107 @@
+<html>
+
+<head>
+    <title>JS Calculator</title>
+    <script src="evaluator.js"></script>
+    <script>
+        function onSubmit()
+{
+var frm=document.forms.input;
+if(frm.expression.value!="")
+{
+var expr=frm.expression.value;
+addToLog(">>> "+expr,false);
+var res="";
+
+try
+{
+if(expr.indexOf("=")!=-1)
+{
+var buffer="";
+var name,value;
+for(var i=0; i<expr.length; i++)
+{
+if(expr[i]==" ")
+continue;
+if(expr[i]=="=")
+{
+name=buffer;
+buffer="";
+continue;
+}
+buffer+=expr[i];
+}
+value=buffer;
+
+variables[name]=evaluateFromTokens(tokenize(value));
+res=name+" = "+variables[name];
+}
+else
+res=evaluateFromTokens(tokenize(expr));
+}
+catch(err)
+{
+res=err.message;
+}
+addToLog(res);
+frm.expression.value="";
+}
+}
+function addToLog(text,aria=true)
+{
+if(aria)
+{
+document.getElementById("ariaIncomingText").innerHTML="";
+document.getElementById("ariaIncomingText").innerHTML=text;
+}
+document.getElementById("log").innerHTML+="<br>"+text;
+return true;
+}
+</script>
+    <span id="ariaIncomingText" style="display: block;" aria-live="polite" aria-atomic="true" hidden></span>
+    <!--If you don't know what aria is, google should explain it. Basically aria is an accessibility standard which I needed to implement here for convenience when testing-->
+</head>
+
+<body>
+    <h1>JS Calculator</h1>
+    <h2>By Lucas Brown</h2>
+    To use the calculator, just type an equation or variable assignment into the box and hit the submit button. Any results will then appear above in the log.<br>
+    Examples of things to type:
+    <table>
+        <tr>
+            <td>what to type</td>
+            <td>Explanation</td>
+        </tr>
+        <tr>
+            <td>2+2</td>
+            <td>Adds 2 and 2 to produce 4</td>
+        </tr>
+        <tr>
+            <td>x=4</td>
+            <td>Assigns the variable x to be equal to 4</td>
+        </tr>
+        <tr>
+            <td>x+2</td>
+            <td>Takes the value of x and adds 2 to it, without changing hte value of x</td>
+        </tr>
+        <tr>
+            <td>2x (or 2*x)</td>
+            <td>Takes the value of x and multiplies it by 2, again without changing the value of x itself</td>
+        </tr>
+        <tr>
+            <td>sqrt(25)</td>
+            <td>Calculates the square root of 25</td>
+        </tr>
+        <tr>
+            <td>(6+3)*2</td>
+            <td>Calculates the answer to 6 plus 3 (9), then 9 times 2 (18)</td>
+        </tr>
+    </table>
+
+    <div id="log"></div>
+    <form name="input" action="javascript:void(0);" onsubmit="onSubmit()">
+        >>> <input type="text" id="expression">
+        <input type="submit" value="submit">
+</body>
+
+</html>
